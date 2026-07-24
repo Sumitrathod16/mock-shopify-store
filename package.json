@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build-shopify": "npm run build && node scripts/package-shopify.js && tar -a -c -f aura-shopify-theme.zip -C shopify-theme layout templates config assets",
+    "build-shopify": "npm run build && node scripts/package-shopify.js && tar -a -c -f aura-shopify-theme.zip -C shopify-theme layout templates sections config assets",
     "lint": "oxlint",
     "preview": "vite preview"
   },

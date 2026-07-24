@@ -1,0 +1,21 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "value_props": {
+      "type": "value-props",
+      "settings": {}
+    },
+    "catalog": {
+      "type": "catalog",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "value_props",
+    "catalog"
+  ]
+}

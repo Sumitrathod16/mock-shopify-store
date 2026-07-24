@@ -1,0 +1,71 @@
+<script type="application/json" id="shopify-settings-value-props">
+  {
+    "prop1_title": {{ section.settings.prop1_title | json }},
+    "prop1_desc": {{ section.settings.prop1_desc | json }},
+    "prop2_title": {{ section.settings.prop2_title | json }},
+    "prop2_desc": {{ section.settings.prop2_desc | json }},
+    "prop3_title": {{ section.settings.prop3_title | json }},
+    "prop3_desc": {{ section.settings.prop3_desc | json }}
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Store Value Propositions",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Proposition 1"
+    },
+    {
+      "type": "text",
+      "id": "prop1_title",
+      "label": "Title",
+      "default": "Free Carbon-Neutral Delivery"
+    },
+    {
+      "type": "text",
+      "id": "prop1_desc",
+      "label": "Description",
+      "default": "On all orders over $500. Packaged in recycled materials."
+    },
+    {
+      "type": "header",
+      "content": "Proposition 2"
+    },
+    {
+      "type": "text",
+      "id": "prop2_title",
+      "label": "Title",
+      "default": "30-Day Aesthetic Trial"
+    },
+    {
+      "type": "text",
+      "id": "prop2_desc",
+      "label": "Description",
+      "default": "Return any item if it doesn't fit your space perfectly."
+    },
+    {
+      "type": "header",
+      "content": "Proposition 3"
+    },
+    {
+      "type": "text",
+      "id": "prop3_title",
+      "label": "Title",
+      "default": "Architect Quality Guarantee"
+    },
+    {
+      "type": "text",
+      "id": "prop3_desc",
+      "label": "Description",
+      "default": "All products come with a certified 2-year warranty."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Store Value Propositions"
+    }
+  ]
+}
+{% endschema %}

@@ -1,10 +1,38 @@
 import React from 'react';
 import chairImgLocal from '../assets/chair.png';
 import { getAssetUrl } from '../utils/assets';
+import { getShopifySettings } from '../utils/settings';
 
 const chairImg = getAssetUrl('chair.png', chairImgLocal);
 
+const defaultHeroSettings = {
+  subtitle: 'New Autumn Collection 2026',
+  title: 'Spaces Designed for Quiet Contemplation',
+  description: 'A curated selection of minimalist living furniture, soft textiles, and organic ceramic art pieces designed to infuse harmony and space into your home.',
+  buttonText: 'Explore Collection',
+  secondaryButtonText: 'View Journal',
+  image: null,
+  productName: 'Aura Lounge Chair',
+  productPrice: '$850.00 USD'
+};
+
 export default function Hero({ onExploreClick }) {
+  const settings = getShopifySettings('hero', defaultHeroSettings);
+  const heroImage = settings.image || chairImg;
+
+  const renderTitle = () => {
+    if (settings.title === defaultHeroSettings.title) {
+      return (
+        <>
+          Spaces Designed <br />
+          for Quiet <br />
+          <span style={{ fontStyle: 'italic', fontWeight: 300 }}>Contemplation</span>
+        </>
+      );
+    }
+    return settings.title;
+  };
+
   return (
     <section className="animate-fade-in" style={{
       padding: '40px 0 80px 0',
@@ -33,7 +61,7 @@ export default function Hero({ onExploreClick }) {
             marginBottom: '16px',
             display: 'block'
           }}>
-            New Autumn Collection 2026
+            {settings.subtitle}
           </span>
           <h1 style={{
             fontSize: 'calc(2.5rem + 1.5vw)',
@@ -43,9 +71,7 @@ export default function Hero({ onExploreClick }) {
             marginBottom: '24px',
             fontFamily: 'var(--font-display)'
           }}>
-            Spaces Designed <br />
-            for Quiet <br />
-            <span style={{ fontStyle: 'italic', fontWeight: 300 }}>Contemplation</span>
+            {renderTitle()}
           </h1>
           <p style={{
             fontSize: '16px',
@@ -54,7 +80,7 @@ export default function Hero({ onExploreClick }) {
             marginBottom: '40px',
             lineHeight: '1.7'
           }}>
-            A curated selection of minimalist living furniture, soft textiles, and organic ceramic art pieces designed to infuse harmony and space into your home.
+            {settings.description}
           </p>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             <button 
@@ -72,7 +98,7 @@ export default function Hero({ onExploreClick }) {
                 boxShadow: '0 4px 14px rgba(0,0,0,0.1)'
               }}
             >
-              Explore Collection
+              {settings.buttonText}
             </button>
             <button 
               onClick={onExploreClick}
@@ -88,7 +114,7 @@ export default function Hero({ onExploreClick }) {
                 transition: 'var(--transition-smooth)'
               }}
             >
-              View Journal
+              {settings.secondaryButtonText}
             </button>
           </div>
         </div>
@@ -122,8 +148,8 @@ export default function Hero({ onExploreClick }) {
             transition: 'var(--transition-smooth)'
           }} className="hero-img-container">
             <img 
-              src={chairImg} 
-              alt="Aura Boucle Lounge Chair" 
+              src={heroImage} 
+              alt={settings.productName} 
               style={{
                 width: '100%',
                 maxHeight: '520px',
@@ -149,10 +175,10 @@ export default function Hero({ onExploreClick }) {
               Featured Product
             </span>
             <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginTop: '2px' }}>
-              Aura Lounge Chair
+              {settings.productName}
             </span>
             <span style={{ fontSize: '14px', color: 'var(--text-secondary)', display: 'block', marginTop: '1px' }}>
-              $850.00 USD
+              {settings.productPrice}
             </span>
           </div>
         </div>

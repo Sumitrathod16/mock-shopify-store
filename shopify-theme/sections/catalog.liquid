@@ -1,0 +1,63 @@
+<script type="application/json" id="shopify-settings-catalog">
+  {
+    "subtitle": {{ section.settings.subtitle | json }},
+    "heading": {{ section.settings.heading | json }}
+  }
+</script>
+
+<script type="application/json" id="shopify-products-data">
+  [
+    {% paginate collections.all.products by 50 %}
+      {% for product in collections.all.products %}
+        {
+          "id": {{ product.id }},
+          "name": {{ product.title | json }},
+          "category": {{ product.type | json | default: "decor" }},
+          "price": {{ product.price | money_without_currency | replace: ',', '' }},
+          "rating": 5.0,
+          "reviews": 0,
+          "image": {% if product.featured_image != blank %}{{ product.featured_image | img_url: '800x800' | json }}{% else %}null{% endif %},
+          "description": {{ product.description | strip_html | truncatewords: 50 | json }},
+          "specs": {
+            "Vendor": {{ product.vendor | json }},
+            "Type": {{ product.type | json }}
+          },
+          "options": {
+            {% for option in product.options_with_values %}
+              {{ option.name | downcase | json }}: [
+                {% for value in option.values %}
+                  {{ value | json }}{% unless forloop.last %},{% endunless %}
+                {% endfor %}
+              ]{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    {% endpaginate %}
+  ]
+</script>
+
+{% schema %}
+{
+  "name": "Product Catalog",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Catalog Subtitle",
+      "default": "Shop Aura"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Catalog Heading",
+      "default": "All Collections"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Catalog"
+    }
+  ]
+}
+{% endschema %}

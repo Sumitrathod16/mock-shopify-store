@@ -2,7 +2,20 @@
   "current": "Default",
   "presets": {
     "Default": {
-      "sections": {}
+      "sections": {
+        "hero": {
+          "type": "hero",
+          "settings": {}
+        },
+        "value_props": {
+          "type": "value-props",
+          "settings": {}
+        },
+        "catalog": {
+          "type": "catalog",
+          "settings": {}
+        }
+      }
     }
   }
 }

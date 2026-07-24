@@ -1,0 +1,76 @@
+<script type="application/json" id="shopify-settings-hero">
+  {
+    "subtitle": {{ section.settings.subtitle | json }},
+    "title": {{ section.settings.title | json }},
+    "description": {{ section.settings.description | json }},
+    "buttonText": {{ section.settings.button_text | json }},
+    "secondaryButtonText": {{ section.settings.secondary_button_text | json }},
+    "productName": {{ section.settings.product_name | json }},
+    "productPrice": {{ section.settings.product_price | json }},
+    "image": {% if section.settings.image != blank %}{{ section.settings.image | img_url: '1000x' | json }}{% else %}null{% endif %}
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Hero Showcase",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "New Autumn Collection 2026"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Spaces Designed for Quiet Contemplation"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "A curated selection of minimalist living furniture, soft textiles, and organic ceramic art pieces designed to infuse harmony and space into your home."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Primary Button Text",
+      "default": "Explore Collection"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Secondary Button Text",
+      "default": "View Journal"
+    },
+    {
+      "type": "header",
+      "content": "Floating Product Card"
+    },
+    {
+      "type": "text",
+      "id": "product_name",
+      "label": "Product Name",
+      "default": "Aura Lounge Chair"
+    },
+    {
+      "type": "text",
+      "id": "product_price",
+      "label": "Product Price",
+      "default": "$850.00 USD"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero Image (Overrides default chair)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Showcase"
+    }
+  ]
+}
+{% endschema %}

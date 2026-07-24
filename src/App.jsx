@@ -5,10 +5,25 @@ import Catalog from './components/Catalog';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
-import { products, categories } from './mockData';
 import { Sparkles, Mail, Send, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { getShopifyProducts, getShopifyCategories } from './utils/products';
+import { getShopifySettings } from './utils/settings';
+
+const loadedProducts = getShopifyProducts();
+const loadedCategories = getShopifyCategories(loadedProducts);
+
+const defaultValuePropsSettings = {
+  prop1_title: "Free Carbon-Neutral Delivery",
+  prop1_desc: "On all orders over $500. Packaged in recycled materials.",
+  prop2_title: "30-Day Aesthetic Trial",
+  prop2_desc: "Return any item if it doesn't fit your space perfectly.",
+  prop3_title: "Architect Quality Guarantee",
+  prop3_desc: "All products come with a certified 2-year warranty."
+};
 
 export default function App() {
+  const valueProps = getShopifySettings('value-props', defaultValuePropsSettings);
+
   // 1. App states
   const [cartItems, setCartItems] = useState(() => {
     const local = localStorage.getItem('aura_cart');
@@ -182,26 +197,26 @@ export default function App() {
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
             <Truck size={22} style={{ color: 'var(--accent)' }} />
-            <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>Free Carbon-Neutral Delivery</h4>
-            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>On all orders over $500. Packaged in recycled materials.</p>
+            <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{valueProps.prop1_title}</h4>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{valueProps.prop1_desc}</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
             <RotateCcw size={22} style={{ color: 'var(--accent)' }} />
-            <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>30-Day Aesthetic Trial</h4>
-            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Return any item if it doesn't fit your space perfectly.</p>
+            <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{valueProps.prop2_title}</h4>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{valueProps.prop2_desc}</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
             <ShieldCheck size={22} style={{ color: 'var(--accent)' }} />
-            <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>Architect Quality Guarantee</h4>
-            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>All products come with a certified 2-year warranty.</p>
+            <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>{valueProps.prop3_title}</h4>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{valueProps.prop3_desc}</p>
           </div>
         </div>
       </section>
 
       {/* Main Catalog */}
       <Catalog 
-        products={products}
-        categories={categories}
+        products={loadedProducts}
+        categories={loadedCategories}
         onQuickAdd={handleQuickAdd}
         onViewDetails={handleOpenProductDetails}
         searchQuery={searchQuery}
