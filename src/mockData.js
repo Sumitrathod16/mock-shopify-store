@@ -1,5 +1,9 @@
-import chairImg from './assets/chair.png';
-import lightImg from './assets/light.png';
+import chairImgLocal from './assets/chair.png';
+import lightImgLocal from './assets/light.png';
+import { getAssetUrl } from './utils/assets';
+
+const chairImg = getAssetUrl('chair.png', chairImgLocal);
+const lightImg = getAssetUrl('light.png', lightImgLocal);
 
 export const categories = [
   { id: 'all', name: 'All Collection' },

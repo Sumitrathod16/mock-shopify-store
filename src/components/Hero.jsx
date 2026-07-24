@@ -1,5 +1,8 @@
 import React from 'react';
-import chairImg from '../assets/chair.png';
+import chairImgLocal from '../assets/chair.png';
+import { getAssetUrl } from '../utils/assets';
+
+const chairImg = getAssetUrl('chair.png', chairImgLocal);
 
 export default function Hero({ onExploreClick }) {
   return (

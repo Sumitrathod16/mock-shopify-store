@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="{{ canonical_url }}">
+    
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {{ content_for_header }}
+
+    <!-- Assets mapper for React SPA -->
+    <script>
+      window.ShopifyThemeAssets = {
+        "chair.png": "{{ 'chair.png' | asset_url }}",
+        "light.png": "{{ 'light.png' | asset_url }}"
+      };
+    </script>
+
+    <!-- Main Stylesheet -->
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+  </head>
+  <body>
+    <div id="root">
+      {{ content_for_layout }}
+    </div>
+
+    <!-- Main Bundle -->
+    {{ 'theme.js' | asset_url | script_tag }}
+  </body>
+</html>
