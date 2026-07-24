@@ -161,27 +161,10 @@ export default function Catalog({
         </div>
 
         {/* Main Grid & Filters Column */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: isFilterPanelOpen ? '250px 1fr' : '1fr',
-          gap: '40px',
-          alignItems: 'start',
-          transition: 'all 0.5s ease'
-        }}>
+        <div className={`catalog-layout-grid ${isFilterPanelOpen ? '' : 'filters-closed'}`}>
           {/* Filters Sidebar */}
           {isFilterPanelOpen && (
-            <aside className="animate-fade-in" style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '32px',
-              padding: '24px',
-              borderRadius: '16px',
-              backgroundColor: 'var(--card-bg)',
-              border: '1px solid var(--border)',
-              boxShadow: 'var(--card-shadow)',
-              position: 'sticky',
-              top: '100px'
-            }}>
+            <aside className="catalog-sidebar animate-fade-in">
               
               {/* Reset All */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -322,6 +305,28 @@ export default function Catalog({
       </div>
 
       <style>{`
+        .catalog-layout-grid {
+          display: grid;
+          grid-template-columns: 250px 1fr;
+          gap: 40px;
+          align-items: start;
+          transition: all 0.5s ease;
+        }
+        .catalog-layout-grid.filters-closed {
+          grid-template-columns: 1fr;
+        }
+        .catalog-sidebar {
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+          padding: 24px;
+          border-radius: 16px;
+          background-color: var(--card-bg);
+          border: 1px solid var(--border);
+          box-shadow: var(--card-shadow);
+          position: sticky;
+          top: 100px;
+        }
         .control-btn:hover {
           background-color: var(--bg-secondary);
           border-color: var(--text-primary) !important;
@@ -340,6 +345,18 @@ export default function Catalog({
         .explore-btn:hover {
           background-color: var(--accent) !important;
           transform: translateY(-1px);
+        }
+        @media (max-width: 992px) {
+          .catalog-layout-grid {
+            grid-template-columns: 1fr !important;
+            gap: 30px;
+          }
+          .catalog-sidebar {
+            position: relative !important;
+            top: 0 !important;
+            width: 100%;
+            box-sizing: border-box;
+          }
         }
         @media (max-width: 768px) {
           #catalog-section {
