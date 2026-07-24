@@ -1,7 +1,7 @@
 import React from 'react';
 import chairImgLocal from '../assets/chair.png';
 import { getAssetUrl } from '../utils/assets';
-import { getShopifySettings } from '../utils/settings';
+import { useShopifySettings } from '../utils/settings';
 
 const chairImg = getAssetUrl('chair.png', chairImgLocal);
 
@@ -17,7 +17,7 @@ const defaultHeroSettings = {
 };
 
 export default function Hero({ onExploreClick }) {
-  const settings = getShopifySettings('hero', defaultHeroSettings);
+  const settings = useShopifySettings('hero', defaultHeroSettings);
   const heroImage = settings.image || chairImg;
 
   const renderTitle = () => {

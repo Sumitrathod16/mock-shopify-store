@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import ProductCard from './ProductCard';
 import { SlidersHorizontal, ArrowUpDown, RefreshCw } from 'lucide-react';
-import { getShopifySettings } from '../utils/settings';
+import { useShopifySettings } from '../utils/settings';
 
 const defaultCatalogSettings = {
   subtitle: 'Shop Aura',
@@ -16,7 +16,7 @@ export default function Catalog({
   searchQuery, 
   setSearchQuery 
 }) {
-  const settings = getShopifySettings('catalog', defaultCatalogSettings);
+  const settings = useShopifySettings('catalog', defaultCatalogSettings);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [priceRange, setPriceRange] = useState(1000);

@@ -73,9 +73,12 @@ const themeLiquidContent = `<!doctype html>
     {{ 'theme.css' | asset_url | stylesheet_tag }}
   </head>
   <body>
-    <div id="root">
+    <!-- Hidden container to preserve Liquid-rendered sections and script tags for the Shopify Editor -->
+    <div id="shopify-section-data" style="display: none !important;">
       {{ content_for_layout }}
     </div>
+
+    <div id="root"></div>
 
     <!-- Main Bundle -->
     {{ 'theme.js' | asset_url | script_tag }}

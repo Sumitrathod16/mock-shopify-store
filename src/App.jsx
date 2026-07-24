@@ -7,7 +7,7 @@ import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
 import { Sparkles, Mail, Send, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { getShopifyProducts, getShopifyCategories } from './utils/products';
-import { getShopifySettings } from './utils/settings';
+import { useShopifySettings } from './utils/settings';
 
 const loadedProducts = getShopifyProducts();
 const loadedCategories = getShopifyCategories(loadedProducts);
@@ -22,7 +22,7 @@ const defaultValuePropsSettings = {
 };
 
 export default function App() {
-  const valueProps = getShopifySettings('value-props', defaultValuePropsSettings);
+  const valueProps = useShopifySettings('value-props', defaultValuePropsSettings);
 
   // 1. App states
   const [cartItems, setCartItems] = useState(() => {
