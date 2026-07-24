@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build-shopify": "npm run build && node scripts/package-shopify.js && powershell -Command \"Compress-Archive -Path shopify-theme/* -DestinationPath aura-shopify-theme.zip -Force\"",
+    "build-shopify": "npm run build && node scripts/package-shopify.js && tar -a -c -f aura-shopify-theme.zip -C shopify-theme layout templates config assets",
     "lint": "oxlint",
     "preview": "vite preview"
   },
