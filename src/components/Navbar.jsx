@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, Moon, Sun, Menu, X } from 'lucide-react';
+import { ShoppingBag, Search, Moon, Sun, Menu, X, Heart } from 'lucide-react';
 
 export default function Navbar({ 
   cartCount, 
   onCartClick, 
+  wishlistCount,
+  onWishlistClick,
   searchQuery, 
   setSearchQuery, 
   theme, 
@@ -134,6 +136,34 @@ export default function Navbar({
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          {/* Wishlist Icon & Badge */}
+          <button 
+            onClick={onWishlistClick} 
+            style={{ 
+              color: 'var(--text-primary)', 
+              display: 'flex', 
+              alignItems: 'center',
+              position: 'relative',
+              padding: '6px',
+              borderRadius: '50%',
+              transition: 'var(--transition-fast)'
+            }}
+            className="icon-btn-hover"
+            aria-label="Open wishlist"
+          >
+            <Heart size={18} fill={wishlistCount > 0 ? "var(--accent)" : "none"} style={{ color: wishlistCount > 0 ? "var(--accent)" : "var(--text-primary)" }} />
+            {wishlistCount > 0 && (
+              <span className="badge animate-pop" style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '-4px',
+                animation: 'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              }}>
+                {wishlistCount}
+              </span>
+            )}
           </button>
 
           {/* Shopping Cart Icon & Badge */}

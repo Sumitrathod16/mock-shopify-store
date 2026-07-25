@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CreditCard, ChevronRight, CheckCircle2, ShieldCheck, Mail, MapPin } from 'lucide-react';
 
-export default function CheckoutModal({ isOpen, onClose, cartTotals, onOrderComplete }) {
-  if (!isOpen) return null;
-
+export default function CheckoutModal({ isOpen, onClose, cartTotals, onOrderComplete, giftNote }) {
   const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Success
   const [shippingForm, setShippingForm] = useState({
     email: '', firstName: '', lastName: '', address: '', city: '', zip: '', country: 'United States'
@@ -12,6 +10,19 @@ export default function CheckoutModal({ isOpen, onClose, cartTotals, onOrderComp
     cardName: '', cardNumber: '', cardExpiry: '', cardCvv: ''
   });
   const [formErrors, setFormErrors] = useState({});
+
+  // Escape key to close (only if not on step 3 success screen)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen && step !== 3) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose, step]);
+
+  if (!isOpen) return null;
 
   const handleShippingSubmit = (e) => {
     e.preventDefault();
@@ -498,6 +509,12 @@ export default function CheckoutModal({ isOpen, onClose, cartTotals, onOrderComp
                 <span style={{ color: 'var(--text-primary)' }}>Total Charged</span>
                 <span style={{ color: 'var(--text-primary)' }}>${cartTotals.total.toFixed(2)} USD</span>
               </div>
+              {giftNote && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid var(--border)', paddingTop: '10px' }}>
+                  <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Gift Note</span>
+                  <span style={{ fontStyle: 'italic', color: 'var(--text-primary)' }}>"{giftNote}"</span>
+                </div>
+              )}
             </div>
 
             {/* Back to Home Button */}

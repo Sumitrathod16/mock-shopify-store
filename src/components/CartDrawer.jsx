@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, ShoppingBag, Plus, Minus, Trash2, Ticket } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ShoppingBag, Plus, Minus, Trash2, Ticket, Gift } from 'lucide-react';
 
 export default function CartDrawer({ 
   isOpen, 
@@ -7,14 +7,28 @@ export default function CartDrawer({
   cartItems, 
   onUpdateQty, 
   onRemoveItem, 
-  onCheckout 
+  onCheckout,
+  giftNote,
+  onGiftNoteChange
 }) {
-  if (!isOpen) return null;
-
   const [promoCode, setPromoCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0); // in percentage
   const [discountError, setDiscountError] = useState('');
   const [discountAppliedMsg, setDiscountAppliedMsg] = useState('');
+  const [isGiftActive, setIsGiftActive] = useState(giftNote !== '');
+
+  // Escape key to close
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   // Calculations
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -135,6 +149,38 @@ export default function CartDrawer({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              
+              {/* Free Shipping Progress Bar */}
+              <div style={{
+                backgroundColor: 'var(--bg-secondary)',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                border: '1px solid var(--border)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                  {subtotal >= freeShippingThreshold ? (
+                    <span style={{ fontWeight: 600, color: 'var(--accent)' }}>✨ Free Shipping Unlocked!</span>
+                  ) : (
+                    <span>You're <span style={{ fontWeight: 700 }}>${(freeShippingThreshold - subtotal).toFixed(2)}</span> away from <strong>Free Shipping</strong></span>
+                  )}
+                  <span style={{ fontWeight: 700 }}>{Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100))}%</span>
+                </div>
+                <div style={{
+                  width: '100%',
+                  height: '6px',
+                  backgroundColor: 'var(--border)',
+                  borderRadius: '10px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${Math.min(100, (subtotal / freeShippingThreshold) * 100)}%`,
+                    height: '100%',
+                    backgroundColor: subtotal >= freeShippingThreshold ? 'var(--accent)' : 'var(--text-primary)',
+                    borderRadius: '10px',
+                    transition: 'width 0.5s cubic-bezier(0.25, 1, 0.5, 1)'
+                  }} />
+                </div>
+              </div>
               {cartItems.map((item) => (
                 <div 
                   key={`${item.id}-${item.option}`} 
@@ -224,6 +270,53 @@ export default function CartDrawer({
                   </button>
                 </div>
               ))}
+
+              {/* Gift Note Toggle & Field */}
+              <div style={{
+                borderTop: '1px solid var(--border)',
+                paddingTop: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>
+                  <input 
+                    type="checkbox" 
+                    checked={isGiftActive} 
+                    onChange={(e) => {
+                      setIsGiftActive(e.target.checked);
+                      if (!e.target.checked) onGiftNoteChange('');
+                    }}
+                    style={{ accentColor: 'var(--accent)' }}
+                  />
+                  <Gift size={14} style={{ color: 'var(--accent)' }} />
+                  <span>Add a complimentary gift note</span>
+                </label>
+
+                {isGiftActive && (
+                  <textarea 
+                    value={giftNote}
+                    onChange={(e) => onGiftNoteChange(e.target.value)}
+                    placeholder="Enter message for gift tag or special delivery instructions..."
+                    maxLength={200}
+                    style={{
+                      width: '100%',
+                      height: '80px',
+                      backgroundColor: 'var(--bg-primary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      fontSize: '12px',
+                      outline: 'none',
+                      resize: 'none',
+                      color: 'var(--text-primary)',
+                      fontFamily: 'inherit',
+                      transition: 'var(--transition-fast)'
+                    }}
+                    className="gift-note-textarea"
+                  />
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -371,6 +464,10 @@ export default function CartDrawer({
         .checkout-btn:hover {
           background-color: var(--accent) !important;
           transform: translateY(-1px);
+        }
+        .gift-note-textarea:focus {
+          border-color: var(--accent) !important;
+          box-shadow: 0 0 0 2px rgba(184, 146, 96, 0.1);
         }
       `}</style>
     </div>

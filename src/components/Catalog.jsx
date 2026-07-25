@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import { SlidersHorizontal, ArrowUpDown, RefreshCw } from 'lucide-react';
 import { useShopifySettings } from '../utils/settings';
@@ -11,6 +11,8 @@ const defaultCatalogSettings = {
 export default function Catalog({ 
   products, 
   categories, 
+  wishlistItems,
+  onToggleWishlist,
   onQuickAdd, 
   onViewDetails, 
   searchQuery, 
@@ -23,11 +25,19 @@ export default function Catalog({
   const [minRating, setMinRating] = useState(0);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(true);
 
+  // Auto-switch back to all category if wishlist is emptied
+  useEffect(() => {
+    if (selectedCategory === 'wishlist' && (!wishlistItems || wishlistItems.length === 0)) {
+      setSelectedCategory('all');
+    }
+  }, [wishlistItems, selectedCategory]);
+
   // Filter and sort computation
   const filteredProducts = useMemo(() => {
     return products
       .filter((product) => {
-        const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+        const matchesCategory = selectedCategory === 'all' || 
+          (selectedCategory === 'wishlist' ? (wishlistItems && wishlistItems.includes(product.id)) : product.category === selectedCategory);
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.category.toLowerCase().includes(searchQuery.toLowerCase());
@@ -41,7 +51,7 @@ export default function Catalog({
         if (sortBy === 'rating') return b.rating - a.rating;
         return 0; // 'featured' or default
       });
-  }, [products, selectedCategory, searchQuery, priceRange, minRating, sortBy]);
+  }, [products, selectedCategory, searchQuery, priceRange, minRating, sortBy, wishlistItems]);
 
   const handleResetFilters = () => {
     setSelectedCategory('all');
@@ -74,7 +84,11 @@ export default function Catalog({
               {settings.subtitle}
             </span>
             <h2 style={{ fontSize: '32px', marginTop: '6px', color: 'var(--text-primary)' }}>
-              {selectedCategory === 'all' ? settings.heading : categories.find(c => c.id === selectedCategory)?.name}
+              {selectedCategory === 'all' 
+                ? settings.heading 
+                : selectedCategory === 'wishlist' 
+                  ? 'Saved Items' 
+                  : categories.find(c => c.id === selectedCategory)?.name}
             </h2>
           </div>
 
@@ -158,6 +172,31 @@ export default function Catalog({
               {cat.name}
             </button>
           ))}
+          {wishlistItems && wishlistItems.length > 0 && (
+            <button
+              key="wishlist"
+              onClick={() => setSelectedCategory('wishlist')}
+              style={{
+                padding: '10px 24px',
+                borderRadius: '50px',
+                backgroundColor: selectedCategory === 'wishlist' ? 'var(--accent)' : 'var(--bg-secondary)',
+                color: selectedCategory === 'wishlist' ? '#FFFFFF' : 'var(--accent)',
+                border: '1px solid',
+                borderColor: selectedCategory === 'wishlist' ? 'var(--accent)' : 'var(--border)',
+                fontSize: '13px',
+                fontWeight: 600,
+                letterSpacing: '0.03em',
+                whiteSpace: 'nowrap',
+                transition: 'var(--transition-fast)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              className="cat-pill-wishlist"
+            >
+              Saved Items ({wishlistItems.length})
+            </button>
+          )}
         </div>
 
         {/* Main Grid & Filters Column */}
@@ -293,6 +332,8 @@ export default function Catalog({
                   <ProductCard 
                     key={product.id} 
                     product={product} 
+                    isWishlisted={wishlistItems ? wishlistItems.includes(product.id) : false}
+                    onToggleWishlist={onToggleWishlist}
                     onQuickAdd={onQuickAdd}
                     onViewDetails={onViewDetails}
                   />

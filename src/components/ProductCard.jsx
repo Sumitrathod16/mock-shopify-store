@@ -1,7 +1,7 @@
 import React from 'react';
-import { Plus, Star } from 'lucide-react';
+import { Plus, Star, Heart } from 'lucide-react';
 
-export default function ProductCard({ product, onQuickAdd, onViewDetails }) {
+export default function ProductCard({ product, isWishlisted, onToggleWishlist, onQuickAdd, onViewDetails }) {
   return (
     <div className="product-card animate-fade-in" style={{
       display: 'flex',
@@ -25,6 +25,34 @@ export default function ProductCard({ product, onQuickAdd, onViewDetails }) {
         backgroundColor: 'var(--bg-secondary)',
       }} onClick={() => onViewDetails(product)}>
         
+        {/* Wishlist Toggle Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleWishlist(product.id);
+          }}
+          className="wishlist-toggle-card-btn"
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            zIndex: 10,
+            backgroundColor: 'var(--bg-primary)',
+            color: isWishlisted ? 'var(--accent)' : 'var(--text-secondary)',
+            padding: '8px',
+            borderRadius: '50%',
+            border: '1px solid var(--border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            transition: 'var(--transition-smooth)'
+          }}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <Heart size={14} fill={isWishlisted ? "var(--accent)" : "none"} />
+        </button>
+
         {/* Category Tag */}
         <span style={{
           position: 'absolute',
@@ -205,6 +233,10 @@ export default function ProductCard({ product, onQuickAdd, onViewDetails }) {
         .details-link-hover:hover {
           border-color: var(--accent);
           transform: translateX(2px);
+        }
+        .wishlist-toggle-card-btn:hover {
+          transform: scale(1.1) !important;
+          color: var(--accent) !important;
         }
       `}</style>
     </div>

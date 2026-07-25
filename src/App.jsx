@@ -5,7 +5,8 @@ import Catalog from './components/Catalog';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
-import { Sparkles, Mail, Send, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import WishlistDrawer from './components/WishlistDrawer';
+import { Sparkles, Send, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { getShopifyProducts, getShopifyCategories } from './utils/products';
 import { useShopifySettings } from './utils/settings';
 
@@ -44,6 +45,14 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [cartTotals, setCartTotals] = useState({ subtotal: 0, discount: 0, shipping: 0, total: 0 });
 
+  // Wishlist and Gift Note states
+  const [wishlistItems, setWishlistItems] = useState(() => {
+    const local = localStorage.getItem('aura_wishlist');
+    return local ? JSON.parse(local) : [];
+  });
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [giftNote, setGiftNote] = useState('');
+
   // Custom Toast Notification state
   const [toast, setToast] = useState({ show: false, message: '' });
 
@@ -51,6 +60,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('aura_cart', JSON.stringify(cartItems));
   }, [cartItems]);
+
+  useEffect(() => {
+    localStorage.setItem('aura_wishlist', JSON.stringify(wishlistItems));
+  }, [wishlistItems]);
 
   useEffect(() => {
     localStorage.setItem('aura_theme', theme);
@@ -85,7 +98,22 @@ export default function App() {
       }
     });
     
+    setIsCartOpen(true);
     showToast(`Added ${quantity}x ${product.name} ${option ? `(${option})` : ''} to bag.`);
+  };
+
+  const handleToggleWishlist = (productId) => {
+    setWishlistItems((prev) => {
+      const isAlreadyIn = prev.includes(productId);
+      if (isAlreadyIn) {
+        showToast("Removed item from wishlist.");
+        return prev.filter(id => id !== productId);
+      } else {
+        const prodName = loadedProducts.find(p => p.id === productId)?.name || 'Item';
+        showToast(`Added ${prodName} to wishlist.`);
+        return [...prev, productId];
+      }
+    });
   };
 
   const handleQuickAdd = (product) => {
@@ -172,6 +200,8 @@ export default function App() {
       <Navbar 
         cartCount={cartCount} 
         onCartClick={() => setIsCartOpen(true)}
+        wishlistCount={wishlistItems.length}
+        onWishlistClick={() => setIsWishlistOpen(true)}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         theme={theme}
@@ -217,6 +247,8 @@ export default function App() {
       <Catalog 
         products={loadedProducts}
         categories={loadedCategories}
+        wishlistItems={wishlistItems}
+        onToggleWishlist={handleToggleWishlist}
         onQuickAdd={handleQuickAdd}
         onViewDetails={handleOpenProductDetails}
         searchQuery={searchQuery}
@@ -344,6 +376,8 @@ export default function App() {
         isOpen={isProductModalOpen}
         onClose={() => { setIsProductModalOpen(false); setSelectedProduct(null); }}
         onAddToCart={handleAddToCart}
+        wishlistItems={wishlistItems}
+        onToggleWishlist={handleToggleWishlist}
       />
 
       <CartDrawer 
@@ -353,6 +387,8 @@ export default function App() {
         onUpdateQty={handleUpdateQty}
         onRemoveItem={handleRemoveItem}
         onCheckout={handleOpenCheckout}
+        giftNote={giftNote}
+        onGiftNoteChange={setGiftNote}
       />
 
       <CheckoutModal 
@@ -360,6 +396,16 @@ export default function App() {
         onClose={() => setIsCheckoutOpen(false)}
         cartTotals={cartTotals}
         onOrderComplete={handleOrderComplete}
+        giftNote={giftNote}
+      />
+
+      <WishlistDrawer 
+        isOpen={isWishlistOpen}
+        onClose={() => setIsWishlistOpen(false)}
+        wishlistItems={wishlistItems}
+        products={loadedProducts}
+        onRemoveItem={handleToggleWishlist}
+        onAddToCart={handleAddToCart}
       />
 
       <style>{`

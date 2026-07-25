@@ -1,22 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { X, Star, Plus, Minus, ShoppingBag, ShieldCheck, ArrowRightLeft } from 'lucide-react';
+import { X, Star, Plus, Minus, ShoppingBag, ShieldCheck, ArrowRightLeft, Heart } from 'lucide-react';
 
-export default function ProductModal({ product, isOpen, onClose, onAddToCart }) {
-  if (!isOpen || !product) return null;
-
+export default function ProductModal({ product, isOpen, onClose, onAddToCart, wishlistItems, onToggleWishlist }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState('');
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+  const isWishlisted = wishlistItems && product ? wishlistItems.includes(product.id) : false;
+  const productImages = product && product.images ? product.images : (product ? [product.image] : []);
+
+  // Escape key to close
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   // Reset local state when product changes or modal opens
   useEffect(() => {
-    setQuantity(1);
-    if (product.options) {
-      const keys = Object.keys(product.options);
-      if (keys.length > 0) {
-        setSelectedOption(product.options[keys[0]][0]);
+    if (product) {
+      setQuantity(1);
+      setActiveImageIdx(0);
+      if (product.options) {
+        const keys = Object.keys(product.options);
+        if (keys.length > 0) {
+          setSelectedOption(product.options[keys[0]][0]);
+        }
       }
     }
   }, [product]);
+
+  if (!isOpen || !product) return null;
 
   const handleIncrement = () => setQuantity(q => q + 1);
   const handleDecrement = () => setQuantity(q => (q > 1 ? q - 1 : 1));
@@ -95,6 +113,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
         <div style={{
           backgroundColor: 'var(--bg-secondary)',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '40px',
@@ -102,18 +121,97 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
           overflow: 'hidden',
           minHeight: '400px'
         }}>
-          <img 
-            src={product.image} 
-            alt={product.name} 
-            style={{
-              width: '100%',
-              height: 'auto',
-              maxHeight: '480px',
-              objectFit: 'contain',
-              borderRadius: '12px',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.05)'
-            }}
-          />
+          <div style={{ width: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img 
+              src={productImages[activeImageIdx]} 
+              alt={product.name} 
+              style={{
+                width: '100%',
+                height: 'auto',
+                maxHeight: '400px',
+                objectFit: 'contain',
+                borderRadius: '12px',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.05)',
+                transition: 'var(--transition-smooth)'
+              }}
+            />
+            {productImages.length > 1 && (
+              <>
+                <button
+                  onClick={() => setActiveImageIdx(idx => (idx === 0 ? productImages.length - 1 : idx - 1))}
+                  style={{
+                    position: 'absolute',
+                    left: '-20px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    backgroundColor: 'var(--card-bg)',
+                    color: 'var(--text-primary)',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
+                    zIndex: 15,
+                    fontSize: '16px',
+                    lineHeight: 1
+                  }}
+                  className="carousel-arrow"
+                  aria-label="Previous image"
+                >
+                  &larr;
+                </button>
+                <button
+                  onClick={() => setActiveImageIdx(idx => (idx === productImages.length - 1 ? 0 : idx + 1))}
+                  style={{
+                    position: 'absolute',
+                    right: '-20px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    backgroundColor: 'var(--card-bg)',
+                    color: 'var(--text-primary)',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
+                    zIndex: 15,
+                    fontSize: '16px',
+                    lineHeight: 1
+                  }}
+                  className="carousel-arrow"
+                  aria-label="Next image"
+                >
+                  &rarr;
+                </button>
+              </>
+            )}
+          </div>
+          
+          {productImages.length > 1 && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '24px', zIndex: 10 }}>
+              {productImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImageIdx(i)}
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: activeImageIdx === i ? 'var(--text-primary)' : 'var(--border)',
+                    padding: 0,
+                    transition: 'var(--transition-fast)'
+                  }}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right Side: Product Details & Form */}
@@ -256,6 +354,26 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
             >
               <ShoppingBag size={16} /> Add to Cart
             </button>
+
+            {/* Wishlist Button */}
+            <button
+              onClick={() => onToggleWishlist(product.id)}
+              style={{
+                backgroundColor: 'var(--bg-primary)',
+                color: isWishlisted ? 'var(--accent)' : 'var(--text-primary)',
+                padding: '16px',
+                borderRadius: '50px',
+                border: '1px solid var(--border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'var(--transition-smooth)'
+              }}
+              className="modal-wishlist-btn"
+              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            >
+              <Heart size={16} fill={isWishlisted ? "var(--accent)" : "none"} />
+            </button>
           </div>
 
           {/* Specifications Panel */}
@@ -316,6 +434,16 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
           background-color: var(--accent) !important;
           transform: translateY(-1px);
           box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .modal-wishlist-btn:hover {
+          background-color: var(--bg-secondary) !important;
+          border-color: var(--text-primary) !important;
+          transform: translateY(-1px);
+        }
+        .carousel-arrow:hover {
+          background-color: var(--text-primary) !important;
+          color: var(--bg-primary) !important;
+          transform: translateY(-50%) scale(1.05) !important;
         }
         @media (max-width: 860px) {
           div[class*="animate-scale-in"] {
